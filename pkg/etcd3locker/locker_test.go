@@ -1,6 +1,7 @@
 package etcd3locker
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -9,7 +10,7 @@ import (
 	"go.etcd.io/etcd/client/v3"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tus/tusd/pkg/handler"
+	"github.com/tus/tusd/v2/pkg/handler"
 )
 
 var _ handler.Locker = &Etcd3Locker{}
@@ -43,6 +44,8 @@ func TestEtcd3Locker(t *testing.T) {
 
 	shortTTL := 3
 	testPrefix := "/test-tusd"
+	ctx := context.Background()
+	unlock := func() {}
 
 	lockerOptions := NewLockerOptions(shortTTL, testPrefix)
 	locker, err := NewWithLockerOptions(client, lockerOptions)
@@ -50,7 +53,7 @@ func TestEtcd3Locker(t *testing.T) {
 
 	lock1, err := locker.NewLock("one")
 	a.NoError(err)
-	a.NoError(lock1.Lock())
+	a.NoError(lock1.Lock(ctx, unlock))
 
 	//a.Equal(handler.ErrFileLocked, lock1.Lock())
 	time.Sleep(5 * time.Second)
@@ -58,7 +61,7 @@ func TestEtcd3Locker(t *testing.T) {
 	// while an upload is already taking place; testing etcd3 session KeepAlive
 	lock2, err := locker.NewLock("one")
 	a.NoError(err)
-	a.Equal(handler.ErrFileLocked, lock2.Lock())
+	a.Equal(handler.ErrFileLocked, lock2.Lock(ctx, unlock))
 	a.NoError(lock1.Unlock())
 	a.Equal(ErrLockNotHeld, lock1.Unlock())
 
@@ -69,9 +72,9 @@ func TestEtcd3Locker(t *testing.T) {
 	lock3, err := locker2.NewLock("one")
 	a.NoError(err)
 
-	a.NoError(lock3.Lock())
-	a.Equal(handler.ErrFileLocked, lock3.Lock())
-	a.Equal(handler.ErrFileLocked, lock3.Lock())
+	a.NoError(lock3.Lock(ctx, unlock))
+	a.Equal(handler.ErrFileLocked, lock3.Lock(ctx, unlock))
+	a.Equal(handler.ErrFileLocked, lock3.Lock(ctx, unlock))
 	a.NoError(lock3.Unlock())
 	a.Equal(ErrLockNotHeld, lock3.Unlock())
 }
