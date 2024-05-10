@@ -6,8 +6,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/coreos/etcd/clientv3/concurrency"
 	"github.com/tus/tusd/pkg/handler"
+	"go.etcd.io/etcd/client/v3/concurrency"
 )
 
 type etcd3Lock struct {

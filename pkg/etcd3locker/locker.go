@@ -27,7 +27,6 @@
 //		return nil, fmt.Errorf("Failed to create etcd locker: %v", err.Error())
 //	}
 //
-//
 // For full control over all options, an etcd3.LockerOptions may be passed into
 // etcd3.NewWithLockerOptions like the following example:
 //
@@ -39,16 +38,15 @@
 //	}
 //
 // Tested on etcd 3.1/3.2/3.3
-//
 package etcd3locker
 
 import (
 	"errors"
 	"time"
 
-	etcd3 "github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/clientv3/concurrency"
 	"github.com/tus/tusd/pkg/handler"
+	etcd3 "go.etcd.io/etcd/client/v3"
+	"go.etcd.io/etcd/client/v3/concurrency"
 )
 
 var (

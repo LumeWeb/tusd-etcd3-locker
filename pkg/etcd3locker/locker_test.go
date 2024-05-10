@@ -6,7 +6,7 @@ import (
 	"time"
 
 	etcd_harness "github.com/chen-anders/go-etcd-harness"
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tus/tusd/pkg/handler"
@@ -34,7 +34,12 @@ func TestEtcd3Locker(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to connect to etcd3: %v", err)
 	}
-	defer client.Close()
+	defer func(client *clientv3.Client) {
+		err := client.Close()
+		if err != nil {
+			t.Fatalf("Unable to close etcd3 client: %v", err)
+		}
+	}(client)
 
 	shortTTL := 3
 	testPrefix := "/test-tusd"
