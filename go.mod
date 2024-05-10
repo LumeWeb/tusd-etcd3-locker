@@ -7,12 +7,11 @@ toolchain go1.22.1
 require (
 	github.com/chen-anders/go-etcd-harness v0.0.0-20181107211618-49dd980f448b
 	github.com/stretchr/testify v1.9.0
-	github.com/tus/tusd v0.0.0-20190912111051-76f8489d37f2
+	github.com/tus/tusd/v2 v2.4.0
 	go.etcd.io/etcd/client/v3 v3.5.13
 )
 
 require (
-	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -25,6 +24,7 @@ require (
 	go.etcd.io/etcd/client/pkg/v3 v3.5.13 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect

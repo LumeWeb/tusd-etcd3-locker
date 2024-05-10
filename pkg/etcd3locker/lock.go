@@ -6,9 +6,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/tus/tusd/pkg/handler"
+	"github.com/tus/tusd/v2/pkg/handler"
 	"go.etcd.io/etcd/client/v3/concurrency"
 )
+
+var _ handler.Lock = (*etcd3Lock)(nil)
 
 type etcd3Lock struct {
 	Id      string
@@ -25,17 +27,22 @@ func newEtcd3Lock(session *concurrency.Session, id string) *etcd3Lock {
 	}
 }
 
-// Acquires a lock from etcd3
-func (lock *etcd3Lock) Lock() error {
+func (lock *etcd3Lock) Lock(ctx context.Context, requestUnlock func()) error {
 	if lock.isHeld {
-		return handler.ErrFileLocked
+		// If the lock is already held, invoke the requestUnlock callback
+		go requestUnlock()
+
+		// Wait for the context to be cancelled
+		select {
+		case <-ctx.Done():
+			return handler.ErrLockTimeout
+		}
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// this is a blocking call; if we receive DeadlineExceeded
-	// the lock is most likely already taken
+	// Attempt to acquire the lock
 	if err := lock.Mutex.Lock(ctx); err != nil {
 		if err == context.DeadlineExceeded {
 			return handler.ErrFileLocked

@@ -44,10 +44,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/tus/tusd/pkg/handler"
+	"github.com/tus/tusd/v2/pkg/handler"
 	etcd3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/concurrency"
 )
+
+var _ handler.Locker = (*Etcd3Locker)(nil)
 
 var (
 	ErrLockNotHeld = errors.New("Lock not held")
